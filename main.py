@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import auth
 import mytypes as types
 import resource_groups
+import resources
 
 app = FastAPI()
 
@@ -83,11 +84,17 @@ async def get_state_info():
     return types.Info(names=[name for name in data])
 
 
-@app.get("/data/{state}/{district}/{mandal}/search")
-async def search(state: str, district: str, mandal: str, details: None):
-    ...
+@app.post("/data/{state}/{district}/{mandal}/search")
+async def search(state: str, district: str, mandal: str, details: types.SearchDetails):
+    resources.search(state, district, mandal, None, None, details.resource_type)
+    return ""
 
 
 @app.get("/data/resourceGroups", response_model=types.ResourceGroupReturn)
 async def get_resource_groups():
     return types.ResourceGroupReturn(resource_groups=resource_groups.list_groups())
+
+
+@app.post("/data/{state}/{district}/{mandal}/resources")
+async def create_resource(state: str, district: str, mandal: str, details: types.ResourceCreateDetails, user: int = Depends(get_current_user)):
+    return resources.create(state, district, mandal, details.resource_group_id, details.data, user)

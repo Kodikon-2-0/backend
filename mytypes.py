@@ -43,3 +43,9 @@ class ResourceGroupInfo(pydantic.BaseModel):
 
 class ResourceGroupReturn(pydantic.BaseModel):
     resource_groups: typing.List[ResourceGroupInfo]
+
+
+class ResourceCreateDetails(pydantic.BaseModel):
+    resource_group_id: int
+    data: str
+
