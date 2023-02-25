@@ -1,6 +1,7 @@
 import datetime
 
 import bcrypt
+import fastapi
 import jwt
 from fastapi import HTTPException
 
@@ -9,10 +10,10 @@ import db as database
 JWT_KEY = "changeme"
 
 
-def login(username: str, password: str) -> str:
+def login(username: str, password: str) -> (str, int):
     db = database.get_db()
     cur = db.cursor()
-    cur.execute("SELECT username, password, userid FROM user WHERE username = ?", (username,))
+    cur.execute("SELECT username, password, userid, usertype FROM user WHERE username = ?", (username,))
     result = cur.fetchone()
     if not result:
         print("hi")
@@ -22,12 +23,17 @@ def login(username: str, password: str) -> str:
     if not state:
         raise HTTPException(status_code=403, detail="Invalid Username/Password")
     return jwt.encode({"exp": datetime.datetime.utcnow().replace(hour=(datetime.datetime.utcnow().hour + 5)),
-                       "userid": result[2]}, key=JWT_KEY, algorithm="HS256")
+                       "userid": result[2]}, key=JWT_KEY, algorithm="HS256"), result[3]
 
 
-def create_account(username: str, password: str) -> str:
+def create_account(username: str, password: str, permissions: int) -> str:
+    if permissions & 4:
+        raise fastapi.HTTPException(status_code=403, detail="Invalid Permissions")
     db = database.get_db()
     cur = db.cursor()
+    cur.execute("SELECT * FROM user WHERE username = ?", (username,))
+    if len(cur.fetchall()):
+        raise HTTPException(status_code=401, detail="User Exists")
     cur.execute("INSERT INTO user(username, password) VALUES (?, ?)",
                 (username, bcrypt.hashpw(password.encode(encoding="utf-8"), bcrypt.gensalt()).hex(),))
     db.commit()
