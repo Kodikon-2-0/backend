@@ -1,3 +1,7 @@
+import json
+from urllib import parse
+
+import fastapi
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -49,4 +53,11 @@ async def set_type(new_type: types.UserSetType, user: int = Depends(get_current_
 
 @app.get("/data/{state}/{district}/mandals", response_model=types.MandalInfo)
 async def get_mandal_info(state, district):
-    return ""
+    with open("data.json") as fp:
+        data = json.load(fp)
+    state = parse.unquote(state)
+    district = parse.unquote(district)
+    if state in data and district in data[state]:
+        return types.MandalInfo(mandals=data[state][district])
+    else:
+        raise fastapi.HTTPException(status_code=404, detail="Not found")
