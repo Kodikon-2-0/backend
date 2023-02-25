@@ -38,7 +38,7 @@ async def login(details: types.LoginDetails):
 
 
 @app.post("/createAccount", response_model=types.LoginReturn)
-async def create_account(details: types.LoginDetails):
+async def create_account(details: types.CreateAccountDetails):
     return types.LoginReturn(token=auth.create_account(username=details.Username, password=details.Password))
 
 

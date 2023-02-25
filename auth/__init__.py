@@ -40,10 +40,6 @@ def create_account(username: str, password: str, permissions: int) -> str:
     return str(cur.lastrowid)
 
 
-def set_user_type(userid: int, newtype: int) -> None:
-    ...
-
-
 def get_user_from_token(token: str) -> int:
     obj = jwt.decode(token, key=JWT_KEY, algorithms=["HS256"])
     return obj['userid']
