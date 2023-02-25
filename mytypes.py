@@ -8,3 +8,11 @@ class LoginDetails(pydantic.BaseModel):
 
 class LoginReturn(pydantic.BaseModel):
     token: str
+
+
+class UserSetType(pydantic.BaseModel):
+    type: int
+
+
+class UserSetTypeReturn(pydantic.BaseModel):
+    ...
