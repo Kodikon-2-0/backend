@@ -98,3 +98,8 @@ async def get_resource_groups():
 @app.post("/data/{state}/{district}/{mandal}/resources")
 async def create_resource(state: str, district: str, mandal: str, details: types.ResourceCreateDetails, user: int = Depends(get_current_user)):
     return resources.create(state, district, mandal, details.resource_group_id, details.data, user)
+
+
+@app.post("/order")
+async def create_order(details: types.OrderCreateDetails, user: int = Depends(get_current_user)):
+    return resources.order(details.resource_id, user, details.from_time, details.to_time, details.quantity)

@@ -26,3 +26,15 @@ def create(state: str, district: str, mandal: str, resource_group_id: int, data:
     cur.execute("INSERT INTO resource (owner, state, district, mandal, data, resource_group_id) VALUES (?,?,?,?,?,?)",
                 (owner, state, district, mandal, data, resource_group_id,))
     con.commit()
+
+
+def order(resource_id: int, client: int, from_time: datetime.datetime, to_time: datetime.datetime, qty: float):
+    con = db.get_db()
+    cur = con.cursor()
+    cur.execute("SELECT owner FROM resource WHERE resourceid = ?", (resource_id,))
+    lessor = cur.fetchone()[0]
+    cur.execute(
+        "INSERT INTO orders(resourceid, lessor, lessee, start_time, end_time, quantity, order_status)\
+         VALUES (?,?,?,?,?, ?, ?)",
+        (resource_id, lessor, client, from_time, to_time, qty, 1,))
+    con.commit()

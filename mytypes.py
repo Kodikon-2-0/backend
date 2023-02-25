@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import pydantic
@@ -49,3 +50,9 @@ class ResourceCreateDetails(pydantic.BaseModel):
     resource_group_id: int
     data: str
 
+
+class OrderCreateDetails(pydantic.BaseModel):
+    resource_id: int
+    from_time: datetime.datetime
+    to_time: datetime.datetime
+    quantity: float
