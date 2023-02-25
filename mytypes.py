@@ -25,5 +25,5 @@ class UserSetTypeReturn(pydantic.BaseModel):
     ...
 
 
-class MandalInfo(pydantic.BaseModel):
-    mandals: typing.List[str]
+class Info(pydantic.BaseModel):
+    names: typing.List[str]

@@ -51,13 +51,31 @@ async def set_type(new_type: types.UserSetType, user: int = Depends(get_current_
     return auth.set_user_type(new_type.type, user)
 
 
-@app.get("/data/{state}/{district}/mandals", response_model=types.MandalInfo)
+@app.get("/data/{state}/{district}/mandals", response_model=types.Info)
 async def get_mandal_info(state, district):
     with open("data.json") as fp:
         data = json.load(fp)
     state = parse.unquote(state)
     district = parse.unquote(district)
     if state in data and district in data[state]:
-        return types.MandalInfo(mandals=data[state][district])
+        return types.Info(names=data[state][district])
     else:
         raise fastapi.HTTPException(status_code=404, detail="Not found")
+
+
+@app.get("/data/{state}/districts", response_model=types.Info)
+async def get_district_info(state):
+    with open("data.json") as fp:
+        data = json.load(fp)
+    state = parse.unquote(state)
+    if state in data:
+        return types.Info(names=[name for name in data[state]])
+    else:
+        raise fastapi.HTTPException(status_code=404, detail="Not found")
+
+
+@app.get("/data/states", response_model=types.Info)
+async def get_state_info():
+    with open("data.json") as fp:
+        data = json.load(fp)
+    return types.Info(names=[name for name in data])
