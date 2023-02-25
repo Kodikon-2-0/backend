@@ -34,8 +34,8 @@ def create_account(username: str, password: str, permissions: int) -> str:
     cur.execute("SELECT * FROM user WHERE username = ?", (username,))
     if len(cur.fetchall()):
         raise HTTPException(status_code=401, detail="User Exists")
-    cur.execute("INSERT INTO user(username, password) VALUES (?, ?)",
-                (username, bcrypt.hashpw(password.encode(encoding="utf-8"), bcrypt.gensalt()).hex(),))
+    cur.execute("INSERT INTO user(username, password, usertype) VALUES (?, ?,?)",
+                (username, bcrypt.hashpw(password.encode(encoding="utf-8"), bcrypt.gensalt()).hex(), permissions))
     db.commit()
     return str(cur.lastrowid)
 
