@@ -43,10 +43,10 @@ async def login(details: types.LoginDetails):
     return types.LoginReturn(token=auth_token, usertype=user_type)
 
 
-@app.post("/createAccount", response_model=types.LoginReturn)
+@app.post("/createAccount", response_model=types.CreateAccountResult)
 async def create_account(details: types.CreateAccountDetails):
-    return types.LoginReturn(token=auth.create_account(username=details.Username, password=details.Password,
-                                                       permissions=details.permissions))
+    return types.CreateAccountResult(userid=auth.create_account(username=details.Username, password=details.Password,
+                                                                permissions=details.permissions))
 
 
 @app.patch("/user/setType", response_model=types.UserSetTypeReturn)
@@ -95,10 +95,11 @@ async def get_resource_groups():
     return types.ResourceGroupReturn(resource_groups=resource_groups.list_groups())
 
 
-@app.post("/data/{state}/{district}/{mandal}/resources")
+@app.post("/data/{state}/{district}/{mandal}/resources", response_model=types.CreateResourceResult)
 async def create_resource(state: str, district: str, mandal: str, details: types.ResourceCreateDetails,
                           user: int = Depends(get_current_user)):
-    return resources.create(state, district, mandal, details.resource_group_id, details.data, user)
+    return types.CreateResourceResult(
+        id=resources.create(state, district, mandal, details.resource_group_id, details.data, user))
 
 
 @app.post("/order")
@@ -106,7 +107,12 @@ async def create_order(details: types.OrderCreateDetails, user: int = Depends(ge
     return resources.order(details.resource_id, user, details.from_time, details.to_time, details.quantity)
 
 
-@app.post("/resources/{id}/setAvailableRange")
+@app.post("/resources/{resource_id}/setAvailableRange")
 async def set_resource_range(resource_id: int, details: types.ResourceAvailabilityDetails,
                              user: int = Depends(get_current_user)):
     resources.set_available_range(resource_id, details.start, details.end, user)
+
+
+@app.get("/orders")
+async def get_orders(user_id: int = Depends(get_current_user)):
+    return types.OrderBookResults(orders=resources.get_orders(user_id))

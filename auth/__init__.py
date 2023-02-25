@@ -22,8 +22,7 @@ def login(username: str, password: str) -> (str, int):
     state = bcrypt.checkpw(password.encode(encoding="utf-8"), bytes.fromhex(result[1]))
     if not state:
         raise HTTPException(status_code=403, detail="Invalid Username/Password")
-    return jwt.encode({"exp": datetime.datetime.utcnow().replace(hour=(datetime.datetime.utcnow().hour + 5)),
-                       "userid": result[2]}, key=JWT_KEY, algorithm="HS256"), result[3]
+    return jwt.encode({"userid": result[2]}, key=JWT_KEY, algorithm="HS256"), result[3]
 
 
 def create_account(username: str, password: str, permissions: int) -> str:

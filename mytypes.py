@@ -13,6 +13,8 @@ class CreateAccountDetails(LoginDetails):
     permissions: int
 
 
+class CreateAccountResult(pydantic.BaseModel):
+    userid: str
 class LoginReturn(pydantic.BaseModel):
     token: str
     usertype: int
@@ -76,3 +78,22 @@ class SearchResultsInfo(pydantic.BaseModel):
 
 class SearchResult(pydantic.BaseModel):
     results: typing.List[SearchResultsInfo]
+
+
+class CreateResourceResult(pydantic.BaseModel):
+    id: int
+
+
+class OrderInfo(pydantic.BaseModel):
+    orderid: int
+    lessor: int
+    lessee: int
+    resource: int
+    start_time: datetime.datetime
+    end_time: datetime.datetime
+    quantity: float
+    order_status: int
+
+
+class OrderBookResults(pydantic.BaseModel):
+    orders: typing.List[OrderInfo]

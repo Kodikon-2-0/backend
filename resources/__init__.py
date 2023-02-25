@@ -20,8 +20,9 @@ def search(state: str, district: str, mandal: str, from_time: datetime.datetime,
         (from_time, to_time, state, district, mandal, resource_group_id,))
     rv = []
     for row in cur.fetchall():
-        rv.append(mytypes.SearchResultsInfo(resource_id=row[0], owner=row[1], state=row[2], district=row[3], mandal=row[4],
-                                            data=row[5], available_from=row[7], available_till=row[8]))
+        rv.append(
+            mytypes.SearchResultsInfo(resource_id=row[0], owner=row[1], state=row[2], district=row[3], mandal=row[4],
+                                      data=row[5], available_from=row[7], available_till=row[8]))
     return rv
 
 
@@ -35,7 +36,9 @@ def create(state: str, district: str, mandal: str, resource_group_id: int, data:
         raise fastapi.HTTPException(status_code=409, detail="already exists")
     cur.execute("INSERT INTO resource (owner, state, district, mandal, data, resource_group_id) VALUES (?,?,?,?,?,?)",
                 (owner, state, district, mandal, data, resource_group_id,))
+    rv = cur.lastrowid
     con.commit()
+    return rv
 
 
 def set_available_range(resource_id: int, start: datetime.datetime, end: datetime.datetime, user_id: int):
@@ -59,3 +62,16 @@ def order(resource_id: int, client: int, from_time: datetime.datetime, to_time: 
          VALUES (?,?,?,?,?, ?, ?)",
         (resource_id, lessor, client, from_time, to_time, qty, 1,))
     con.commit()
+
+
+def get_orders(user_id: int):
+    con = db.get_db()
+    cur = con.cursor()
+
+    cur.execute("SELECT * FROM orders WHERE lessor = ?", (user_id,))
+    rows = cur.fetchall()
+    rv = []
+    for row in rows:
+        rv.append(mytypes.OrderInfo(orderid=row[0], resource=row[1], lessor=row[2], lessee=row[3], start_time=row[4],
+                                    end_time=row[5], quantity=row[6], order_status=row[7]))
+    return rv
