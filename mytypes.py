@@ -97,3 +97,8 @@ class OrderInfo(pydantic.BaseModel):
 
 class OrderBookResults(pydantic.BaseModel):
     orders: typing.List[OrderInfo]
+
+
+class OrderAcceptInfo(pydantic.BaseModel):
+    new_status: int
+

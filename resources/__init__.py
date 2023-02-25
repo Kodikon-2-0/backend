@@ -75,3 +75,10 @@ def get_orders(user_id: int):
         rv.append(mytypes.OrderInfo(orderid=row[0], resource=row[1], lessor=row[2], lessee=row[3], start_time=row[4],
                                     end_time=row[5], quantity=row[6], order_status=row[7]))
     return rv
+
+
+def update_order(user_id: int, order_id: int, new_status: int):
+    con = db.get_db()
+    cur = con.cursor()
+    cur.execute("UPDATE orders SET order_status = ? WHERE orderid = ? AND lessor = ?", (new_status, order_id, user_id))
+    con.commit()

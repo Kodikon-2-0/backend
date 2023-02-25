@@ -116,3 +116,8 @@ async def set_resource_range(resource_id: int, details: types.ResourceAvailabili
 @app.get("/orders")
 async def get_orders(user_id: int = Depends(get_current_user)):
     return types.OrderBookResults(orders=resources.get_orders(user_id))
+
+
+@app.patch("/order/{order_id}")
+async def update_order(order_id: int, details: types.OrderAcceptInfo, user: int = Depends(get_current_user)):
+    resources.update_order(user, order_id, details.new_status)
