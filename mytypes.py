@@ -31,8 +31,8 @@ class Info(pydantic.BaseModel):
 
 
 class SearchDetails(pydantic.BaseModel):
-    start_time: int
-    end_time: int
+    start_time: datetime.datetime
+    end_time: datetime.datetime
     resource_type: int
 
 
@@ -56,3 +56,23 @@ class OrderCreateDetails(pydantic.BaseModel):
     from_time: datetime.datetime
     to_time: datetime.datetime
     quantity: float
+
+
+class ResourceAvailabilityDetails(pydantic.BaseModel):
+    start: datetime.datetime
+    end: datetime.datetime
+
+
+class SearchResultsInfo(pydantic.BaseModel):
+    resource_id: int
+    owner: int
+    state: str
+    district: str
+    mandal: str
+    data: str
+    available_from: datetime.datetime
+    available_till: datetime.datetime
+
+
+class SearchResult(pydantic.BaseModel):
+    results: typing.List[SearchResultsInfo]

@@ -86,8 +86,8 @@ async def get_state_info():
 
 @app.post("/data/{state}/{district}/{mandal}/search")
 async def search(state: str, district: str, mandal: str, details: types.SearchDetails):
-    resources.search(state, district, mandal, None, None, details.resource_type)
-    return ""
+    rv = resources.search(state, district, mandal, details.start_time, details.end_time, details.resource_type)
+    return types.SearchResult(results=rv)
 
 
 @app.get("/data/resourceGroups", response_model=types.ResourceGroupReturn)
@@ -96,10 +96,17 @@ async def get_resource_groups():
 
 
 @app.post("/data/{state}/{district}/{mandal}/resources")
-async def create_resource(state: str, district: str, mandal: str, details: types.ResourceCreateDetails, user: int = Depends(get_current_user)):
+async def create_resource(state: str, district: str, mandal: str, details: types.ResourceCreateDetails,
+                          user: int = Depends(get_current_user)):
     return resources.create(state, district, mandal, details.resource_group_id, details.data, user)
 
 
 @app.post("/order")
 async def create_order(details: types.OrderCreateDetails, user: int = Depends(get_current_user)):
     return resources.order(details.resource_id, user, details.from_time, details.to_time, details.quantity)
+
+
+@app.post("/resources/{id}/setAvailableRange")
+async def set_resource_range(resource_id: int, details: types.ResourceAvailabilityDetails,
+                             user: int = Depends(get_current_user)):
+    resources.set_available_range(resource_id, details.start, details.end, user)
