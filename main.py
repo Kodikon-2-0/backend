@@ -84,7 +84,7 @@ async def get_state_info():
     return types.Info(names=[name for name in data])
 
 
-@app.post("/data/{state}/{district}/{mandal}/search")
+@app.post("/data/{state}/{district}/{mandal}/search", response_model=types.SearchResult)
 async def search(state: str, district: str, mandal: str, details: types.SearchDetails):
     rv = resources.search(state, district, mandal, details.start_time, details.end_time, details.resource_type)
     return types.SearchResult(results=rv)
