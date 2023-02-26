@@ -15,7 +15,7 @@ def search(state: str, district: str, mandal: str, from_time: datetime.datetime,
         "SELECT resource.*, availability.start_time, availability.end_time FROM \
         resource JOIN availability ON\
          availability.resource_id = resource.resourceid \
-         WHERE availability.start_time < ? AND availability.end_time > ? \
+         WHERE availability.start_time <= ? AND availability.end_time >= ? \
           AND state = ? AND district = ? AND mandal = ? AND resource_group_id = ?",
         (from_time, to_time, state, district, mandal, resource_group_id,))
     rv = []
@@ -68,12 +68,16 @@ def get_orders(user_id: int):
     con = db.get_db()
     cur = con.cursor()
 
-    cur.execute("SELECT * FROM orders WHERE lessor = ?", (user_id,))
+    cur.execute(
+        "SELECT orderid, r.resourceid, lessor, username, \
+        start_time, end_time, quantity, order_status, r.resource_group_id\
+          FROM orders JOIN user ON userid = lessee JOIN resource r on orders.resourceid = r.resourceid WHERE lessor = ?",
+        (user_id,))
     rows = cur.fetchall()
     rv = []
     for row in rows:
         rv.append(mytypes.OrderInfo(orderid=row[0], resource=row[1], lessor=row[2], lessee=row[3], start_time=row[4],
-                                    end_time=row[5], quantity=row[6], order_status=row[7]))
+                                    end_time=row[5], quantity=row[6], order_status=row[7], resource_group=row[8]))
     return rv
 
 

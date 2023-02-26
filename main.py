@@ -113,7 +113,7 @@ async def set_resource_range(resource_id: int, details: types.ResourceAvailabili
     resources.set_available_range(resource_id, details.start, details.end, user)
 
 
-@app.get("/orders")
+@app.get("/orders", response_model=types.OrderBookResults)
 async def get_orders(user_id: int = Depends(get_current_user)):
     return types.OrderBookResults(orders=resources.get_orders(user_id))
 

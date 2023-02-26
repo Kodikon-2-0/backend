@@ -86,13 +86,14 @@ class CreateResourceResult(pydantic.BaseModel):
 
 class OrderInfo(pydantic.BaseModel):
     orderid: int
-    lessor: int
-    lessee: int
+    lessor: str
+    lessee: str
     resource: int
     start_time: datetime.datetime
     end_time: datetime.datetime
     quantity: float
     order_status: int
+    resource_group: int
 
 
 class OrderBookResults(pydantic.BaseModel):
